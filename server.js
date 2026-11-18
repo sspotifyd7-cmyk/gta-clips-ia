@@ -12,10 +12,20 @@ dotenv.config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
-const uploadDir = path.join(__dirname, 'uploads');
-const outputDir = path.join(__dirname, 'outputs');
-const workDir = path.join(__dirname, 'work');
-const upload = multer({ dest: uploadDir, limits: { fileSize: 2 * 1024 * 1024 * 1024 } });
+const uploadDir = path.join('/tmp', 'gta-clips', 'uploads');
+const outputDir = path.join('/tmp', 'gta-clips', 'outputs');
+const workDir = path.join('/tmp', 'gta-clips', 'work');
+
+await Promise.all([
+  fs.mkdir(uploadDir, { recursive: true }),
+  fs.mkdir(outputDir, { recursive: true }),
+  fs.mkdir(workDir, { recursive: true })
+]);
+
+const upload = multer({
+  dest: uploadDir,
+  limits: { fileSize: 500 * 1024 * 1024 }
+});
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.use(express.static(path.join(__dirname, 'public')));
